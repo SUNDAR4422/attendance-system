@@ -9,12 +9,23 @@ import pandas as pd
 from io import BytesIO
 from werkzeug.utils import secure_filename
 import os
+import logging
 
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+# Initialize Flask app
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'your-secret-key'  # Change this in production
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///attendance.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
+
+# Initialize Flask-Login
+login_manager = LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = 'login'
 
 # Models
 class User(UserMixin, db.Model):
@@ -63,9 +74,18 @@ with app.app_context():
         db.session.add(User(username='professor', password=generate_password_hash('prof123'), role='professor'))
         db.session.commit()
 
+# Define the user_loader after login_manager is initialized
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
+
+# Add the root route
+@app.route('/')
+def home():
+    logger.info("Root route accessed")
+    return "Welcome to the Attendance System! Please log in at /login.", 200
+
+# ... (rest of your routes like /login, /admin_dashboard, etc.)
 
 # Routes
 @app.route('/login', methods=['GET', 'POST'])
