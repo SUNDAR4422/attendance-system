@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card shadow-lg p-4">
+    <h2 class="text-center mb-4"><i class="fas fa-clock"></i> Manage Sessions</h2>
+    <p>Last Login: {{ last_login.strftime('%Y-%m-%d %H:%M:%S') if last_login else 'N/A' }}</p>
+    <table class="table table-striped mb-4">
+        <thead>
+            <tr>
+                <th><i class="fas fa-code"></i> Code</th>
+                <th><i class="fas fa-comment"></i> Remark</th>
+                <th><i class="fas fa-calendar-alt"></i> Created At</th>
+                <th><i class="fas fa-cog"></i> Status</th>
+                <th><i class="fas fa-cog"></i> Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for session in sessions %}
+            <tr>
+                <td>{{ session.code }}</td>
+                <td>{{ session.remark }}</td>
+                <td>{{ session.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                <td>{{ 'Active' if session.attendance_active else 'Inactive' }}</td>
+                <td>
+                    <form method="POST" action="{{ url_for('manage_sessions') }}" style="display:inline;">
+                        <input type="hidden" name="session_id" value="{{ session.id }}">
+                        {% if not session.attendance_active %}
+                            <button type="submit" name="start_session" class="btn btn-success btn-sm"><i class="fas fa-play"></i> Start</button>
+                        {% else %}
+                            <button type="submit" name="stop_session" class="btn btn-warning btn-sm"><i class="fas fa-stop"></i> Stop</button>
+                        {% endif %}
+                        <button type="submit" name="delete_session" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this session and its attendance records?')"><i class="fas fa-trash"></i> Delete</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

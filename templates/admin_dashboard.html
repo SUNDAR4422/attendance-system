@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card shadow-lg p-4">
+    <h2 class="text-center mb-4"><i class="fas fa-tachometer-alt"></i> Admin Dashboard</h2>
+    <p>Last Login: {{ last_login.strftime('%Y-%m-%d %H:%M:%S') if last_login else 'N/A' }}</p>
+    <form method="GET" class="mb-4">
+        <div class="input-group">
+            <input type="date" name="date" value="{{ selected_date }}" class="form-control">
+            <button type="submit" class="btn btn-primary"><i class="fas fa-filter"></i> Filter</button>
+        </div>
+    </form>
+    <h3><i class="fas fa-chalkboard"></i> Sessions - {{ selected_date }}</h3>
+    <table class="table table-striped mb-4">
+        <thead>
+            <tr>
+                <th><i class="fas fa-code"></i> Code</th>
+                <th><i class="fas fa-comment"></i> Remark</th>
+                <th><i class="fas fa-cog"></i> Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for s in sessions %}
+            <tr>
+                <td>{{ s.code }}</td>
+                <td>{{ s.remark }}</td>
+                <td>
+                    {% if not s.attendance_active %}
+                        <form method="POST" action="{{ url_for('start_attendance', session_id=s.id) }}" style="display:inline;">
+                            <button type="submit" class="btn btn-success btn-sm"><i class="fas fa-play"></i> Start</button>
+                        </form>
+                    {% else %}
+                        <form method="POST" action="{{ url_for('stop_attendance', session_id=s.id) }}" style="display:inline;">
+                            <button type="submit" class="btn btn-warning btn-sm"><i class="fas fa-stop"></i> Stop</button>
+                        </form>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <h3><i class="fas fa-users"></i> Attendance Overview - {{ selected_date }}</h3>
+    <p>
+        <span class="highlight highlight-present">Total Present: {{ total_present }}</span> | 
+        <span class="highlight highlight-absent">Total Absent: {{ total_absent }}</span>
+    </p>
+    <a href="{{ url_for('export_excel', date=selected_date) }}" class="btn btn-primary mb-3"><i class="fas fa-file-excel"></i> Export to Excel</a>
+    <table class="table table-striped mb-4">
+        <thead>
+            <tr>
+                <th><i class="fas fa-id-badge"></i> Register Number</th>
+                <th><i class="fas fa-user"></i> Name</th>
+                <th><i class="fas fa-check-circle"></i> Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for student in student_status %}
+            <tr class="{{ 'table-success' if student.status == 'Present' else 'table-danger' }}">
+                <td><a href="{{ url_for('student_profile', register_number=student.register_number) }}">{{ student.register_number }}</a></td>
+                <td>{{ student.name }}</td>
+                <td>{{ student.status }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <h3><i class="fas fa-user-slash"></i> Today's Absentees - {{ selected_date }}</h3>
+    {% if absentees %}
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th><i class="fas fa-id-badge"></i> Register Number</th>
+                <th><i class="fas fa-user"></i> Name</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for absentee in absentees %}
+            <tr class="table-danger">
+                <td><a href="{{ url_for('student_profile', register_number=absentee.register_number) }}">{{ absentee.register_number }}</a></td>
+                <td>{{ absentee.name }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p>No absentees for the selected date.</p>
+    {% endif %}
+</div>
+{% endblock %}

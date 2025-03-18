@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card shadow-lg p-4">
+    <h2 class="text-center mb-4"><i class="fas fa-school"></i> Manage Classes</h2>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th><i class="fas fa-school"></i> Name</th>
+                <th><i class="fas fa-info-circle"></i> Description</th>
+                <th><i class="fas fa-cog"></i> Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for class_ in classes %}
+            <tr>
+                <td>{{ class_.name }}</td>
+                <td>{{ class_.description or 'N/A' }}</td>
+                <td>
+                    <form method="POST" style="display:inline;" onsubmit="return confirmDelete('class', '{{ class_.name }}');">
+                        <input type="hidden" name="class_id" value="{{ class_.id }}">
+                        <button type="submit" name="delete" class="btn btn-danger btn-sm"><i class="fas fa-trash"></i> Delete</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% block scripts %}
+<script>
+function confirmDelete(type, name) {
+    return Swal.fire({
+        title: `Delete ${type} ${name}?`,
+        text: "This action cannot be undone!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Yes, delete it!'
+    }).then((result) => result.isConfirmed);
+}
+</script>
+{% endblock %}
+{% endblock %}

@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card shadow-lg p-4 card-narrow">
+    <h2 class="text-center mb-4"><i class="fas fa-check"></i> Mark Attendance</h2>
+    <form method="POST">
+        <div class="mb-3">
+            <label for="register_number" class="form-label"><i class="fas fa-id-badge"></i> Register Number</label>
+            <input type="text" class="form-control" id="register_number" name="register_number" placeholder="e.g., 12345" required>
+        </div>
+        <div class="mb-3">
+            <label for="session_code" class="form-label"><i class="fas fa-code"></i> Session Code</label>
+            <input type="text" class="form-control" id="session_code" name="session_code" placeholder="e.g., ABC123" required>
+        </div>
+        <div class="mb-3 text-center">
+            {% if active_sessions %}
+                <p>Attendance is active for {{ active_sessions|length }} session(s).</p>
+            {% else %}
+                <p>No active attendance sessions.</p>
+            {% endif %}
+        </div>
+        <button type="submit" class="btn btn-primary w-100"><i class="fas fa-check"></i> Mark Attendance</button>
+    </form>
+</div>
+{% endblock %}

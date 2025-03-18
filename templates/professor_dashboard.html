@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card shadow-lg p-4">
+    <h2 class="text-center mb-4"><i class="fas fa-tachometer-alt"></i> Professor Dashboard</h2>
+    <p>Last Login: {{ last_login.strftime('%Y-%m-%d %H:%M:%S') if last_login else 'N/A' }}</p>
+    <form method="GET" class="mb-4">
+        <div class="input-group">
+            <input type="date" name="date" value="{{ selected_date }}" class="form-control">
+            <button type="submit" class="btn btn-primary"><i class="fas fa-filter"></i> Filter</button>
+        </div>
+    </form>
+    <h3><i class="fas fa-chalkboard"></i> Sessions - {{ selected_date }}</h3>
+    <table class="table table-striped mb-4">
+        <thead>
+            <tr>
+                <th><i class="fas fa-code"></i> Code</th>
+                <th><i class="fas fa-comment"></i> Remark</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for s in sessions %}
+            <tr>
+                <td>{{ s.code }}</td>
+                <td>{{ s.remark }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <h3><i class="fas fa-users"></i> Attendance Overview - {{ selected_date }}</h3>
+    <p>
+        <span class="highlight highlight-present">Total Present: {{ total_present }}</span> | 
+        <span class="highlight highlight-absent">Total Absent: {{ total_absent }}</span>
+    </p>
+    <a href="{{ url_for('export_excel', date=selected_date) }}" class="btn btn-primary mb-3"><i class="fas fa-file-excel"></i> Export to Excel</a>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th><i class="fas fa-id-badge"></i> Register Number</th>
+                <th><i class="fas fa-user"></i> Name</th>
+                <th><i class="fas fa-check-circle"></i> Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for student in student_status %}
+            <tr class="{{ 'table-success' if student.status == 'Present' else 'table-danger' }}">
+                <td><a href="{{ url_for('student_profile', register_number=student.register_number) }}">{{ student.register_number }}</a></td>
+                <td>{{ student.name }}</td>
+                <td>{{ student.status }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
