@@ -8,16 +8,13 @@ from datetime import datetime, timedelta
 import pandas as pd
 from io import BytesIO
 from werkzeug.utils import secure_filename
+import os
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'your-secret-key'  # Change this in production
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///attendance.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
-
-login_manager = LoginManager()
-login_manager.init_app(app)
-login_manager.login_view = 'login'
 
 # Models
 class User(UserMixin, db.Model):
@@ -416,4 +413,4 @@ def dashboard_logic(template_name):
     )
 
 if __name__ == '__main__':
-    app.run(debug=True, port=5000)
+    app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
